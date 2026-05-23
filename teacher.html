@@ -1077,12 +1077,15 @@
                 const permittedClasses = [];
                 if (currentUser.permissions) {
                     currentUser.permissions.forEach(perm => {
-                        if (perm.includes(':') && !perm.startsWith('~')) {
-                            const classSubject = perm.split(':')[0];
-                            const className = classSubject;
-                            if (classes.includes(className) && !permittedClasses.includes(className)) {
-                                permittedClasses.push(className);
-                                hasTeacherPermissions = true;
+                        // 权限格式：班级+学科，例如 "高二（4）班物理"
+                        if (!perm.startsWith('~')) {
+                            // 检查权限字符串是否以某个班级名称开头
+                            for (const className of classes) {
+                                if (perm.startsWith(className) && !permittedClasses.includes(className)) {
+                                    permittedClasses.push(className);
+                                    hasTeacherPermissions = true;
+                                    break;
+                                }
                             }
                         }
                     });
@@ -1156,10 +1159,11 @@
                 const permittedSubjects = [];
                 if (currentUser.permissions) {
                     currentUser.permissions.forEach(perm => {
-                        if (perm.includes(':') && !perm.startsWith('~')) {
-                            const [classSubject, subject] = perm.split(':');
-                            const className = classSubject;
-                            if (className === currentClass && subjects.includes(subject) && !permittedSubjects.includes(subject)) {
+                        // 权限格式：班级+学科，例如 "高二（4）班物理"
+                        if (!perm.startsWith('~') && perm.startsWith(currentClass)) {
+                            // 提取班级后面的学科名称
+                            const subject = perm.substring(currentClass.length);
+                            if (subjects.includes(subject) && !permittedSubjects.includes(subject)) {
                                 permittedSubjects.push(subject);
                             }
                         }
