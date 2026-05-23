@@ -1012,6 +1012,7 @@
             loadUsers();
             loadPermissionData();
             loadPasswordUsers();
+            loadPermissionUsers(); // 自动加载权限用户列表
         }
         
         // 加载用户列表
@@ -1207,7 +1208,7 @@
             refreshBtn.dataset.originalText = refreshBtn.innerHTML;
             setButtonLoading(refreshBtn, true);
             
-            fetch(`${BASE_URL}/users`)
+            fetch(`${BASE_URL}/users?app_name=homework`)
             .then(response => response.json())
             .then(data => {
                 if (data.users) {
@@ -1216,6 +1217,7 @@
                     
                     if (data.users.length === 0) {
                         usersList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">暂无用户数据</div>';
+                        setButtonLoading(refreshBtn, false);
                         return;
                     }
                     
@@ -1228,12 +1230,15 @@
                             userItem.classList.add('selected');
                         }
                         
+                        // 确保 permissions 是数组
+                        const perms = Array.isArray(user.permissions) ? user.permissions : [];
+                        
                         userItem.innerHTML = `
                             <div class="user-header">
                                 <span class="username">${user.username}</span>
-                                <span class="user-roles">角色: ${user.roles.join(', ')}</span>
+                                <span class="user-roles">角色: ${Array.isArray(user.roles) ? user.roles.join(', ') : user.roles}</span>
                             </div>
-                            <div class="user-permissions">权限: ${user.permissions.join(', ') || '无'}</div>
+                            <div class="user-permissions">权限: ${perms.join(', ') || '无'}</div>
                         `;
                         
                         userItem.addEventListener('click', () => {
