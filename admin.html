@@ -1276,8 +1276,8 @@
             }
             
             const prefix = permType === 'student' ? '~' : '';
-            // 权限格式：班级+学科，例如 "高二（4）班物理" 或 "~高二（4）班物理"
-            const newPermission = `${prefix}${className}${subject}`;
+            // 权限格式：班级:学科，例如 "高二（4）班:物理"
+            const newPermission = `${prefix}${className}:${subject}`;
             
             // 检查权限是否已存在
             if (selectedUser.permissions.includes(newPermission)) {

@@ -1077,15 +1077,12 @@
                 const permittedClasses = [];
                 if (currentUser.permissions) {
                     currentUser.permissions.forEach(perm => {
-                        // 权限格式：班级+学科，例如 "高二（4）班物理"
-                        if (!perm.startsWith('~')) {
-                            // 检查权限字符串是否以某个班级名称开头
-                            for (const className of classes) {
-                                if (perm.startsWith(className) && !permittedClasses.includes(className)) {
-                                    permittedClasses.push(className);
-                                    hasTeacherPermissions = true;
-                                    break;
-                                }
+                        // 权限格式：班级:学科，例如 "高二（4）班:物理"
+                        if (perm.includes(':') && !perm.startsWith('~')) {
+                            const className = perm.split(':')[0];
+                            if (classes.includes(className) && !permittedClasses.includes(className)) {
+                                permittedClasses.push(className);
+                                hasTeacherPermissions = true;
                             }
                         }
                     });
@@ -1159,11 +1156,10 @@
                 const permittedSubjects = [];
                 if (currentUser.permissions) {
                     currentUser.permissions.forEach(perm => {
-                        // 权限格式：班级+学科，例如 "高二（4）班物理"
-                        if (!perm.startsWith('~') && perm.startsWith(currentClass)) {
-                            // 提取班级后面的学科名称
-                            const subject = perm.substring(currentClass.length);
-                            if (subjects.includes(subject) && !permittedSubjects.includes(subject)) {
+                        // 权限格式：班级:学科，例如 "高二（4）班:物理"
+                        if (perm.includes(':') && !perm.startsWith('~')) {
+                            const [className, subject] = perm.split(':');
+                            if (className === currentClass && subjects.includes(subject) && !permittedSubjects.includes(subject)) {
                                 permittedSubjects.push(subject);
                             }
                         }
