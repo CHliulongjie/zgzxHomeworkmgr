@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业管理系统 - 学生端</title>
+    <link rel="icon" href="ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --error: #f94144;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --card-bg: #ffffff;
+            --text-primary: #2b2d42;
+            --text-secondary: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            
+            /* 状态颜色 */
+            --status-no-book: #9c27b0;
+            --status-absent: #f44336;
+            --status-no-work: #e91e63;
+            --status-late: #ff9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 登录界面 */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 主界面 */
+        #main-screen {
+            display: none;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-title i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .app-title h1 {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        /* 主内容区 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* 科目卡片 */
+        .subjects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .subject-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .subject-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .subject-class {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: rgba(67, 97, 238, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .no-issues {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .no-issues i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .status-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(248, 249, 250, 0.8);
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .status-no-book .status-icon { background: var(--status-no-book); }
+        .status-absent .status-icon { background: var(--status-absent); }
+        .status-no-work .status-icon { background: var(--status-no-work); }
+        .status-late .status-icon { background: var(--status-late); }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .status-count {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 300px;
+            box-shadow: var(--shadow);
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.info { background: var(--primary); }
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* 加载动画 */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading .loader {
+            display: inline-block;
+        }
+
+        .btn-loading span {
+            display: none;
+        }
+
+        /* 无权限提示 */
+        .no-permission-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .no-permission-message i {
+            font-size: 3rem;
+            color: var(--warning);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .subjects-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 通知组件 -->
+    <div class="notification" id="notification">
+        <span id="notification-message"></span>
+        <button class="notification-close" id="notification-close">&times;</button>
+    </div>
+
+    <!-- 登录界面 -->
+    <div id="login-screen">
+        <div class="container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <i class="fas fa-user-graduate"></i>
+                    <h2 class="login-title">学生登录</h2>
+                    <p class="login-subtitle">中国中学作业管理系统</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="username">用户名</label>
+                    <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                </div>
+                <button class="btn btn-primary" id="login-btn">
+                    <span>登录</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="main-screen">
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="app-title">
+                        <i class="fas fa-user-graduate"></i>
+                        <h1>学生端</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">S</div>
+                        <span id="username-display">学生</span>
+                        <button class="logout-btn" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>退出</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 无权限提示 -->
+            <div class="no-permission-message" id="no-permission-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>您没有被授权查看任何科目的作业记录</h3>
+                <p>请联系管理员为您添加相应的科目查看权限</p>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="dashboard" id="dashboard">
+                <div class="welcome-card">
+                    <h2 class="welcome-title" id="welcome-title">欢迎回来</h2>
+                    <p class="welcome-subtitle" id="welcome-subtitle">以下是您的作业记录概览</p>
+                    <button class="btn btn-primary" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>刷新数据</span>
+                    </button>
+                </div>
+
+                <!-- 统计概览 -->
+                <div class="stats-overview" id="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-subjects">0</div>
+                        <div class="stat-label">科目数量</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-assignments">0</div>
+                        <div class="stat-label">作业总数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="no-issues-count">0</div>
+                        <div class="stat-label">无异常科目</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-issues">0</div>
+                        <div class="stat-label">异常记录</div>
+                    </div>
+                </div>
+
+                <!-- 科目卡片 -->
+                <div class="subjects-container" id="subjects-container">
+                    <!-- 科目卡片将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 服务器配置
+        const BASE_URL = 'https://longjieruankong.xyz';
+        
+        // 全局状态
+        let currentUser = null;
+        let subjectData = [];
+        
+        // DOM元素
+        const loginScreen = document.getElementById('login-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationClose = document.getElementById('notification-close');
+        const logoutBtn = document.getElementById('logout-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const noPermissionMessage = document.getElementById('no-permission-message');
+        const dashboard = document.getElementById('dashboard');
+        const subjectsContainer = document.getElementById('subjects-container');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            bindEvents();
+            
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainScreen();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+        });
+        
+        // 绑定事件
+        function bindEvents() {
+            document.getElementById('login-btn').addEventListener('click', doLogin);
+            logoutBtn.addEventListener('click', doLogout);
+            notificationClose.addEventListener('click', hideNotification);
+            refreshBtn.addEventListener('click', loadData);
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(hideNotification, 3000);
+        }
+        
+        // 隐藏通知
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+        
+        // 设置按钮加载状态
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.innerHTML = '<div class="loader"></div> 处理中...';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || button.innerHTML;
+            }
+        }
+        
+        // 登录功能
+        function doLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showNotification('用户名和密码不能为空', 'warning');
+                return;
+            }
+            
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.dataset.originalText = loginBtn.innerHTML;
+            setButtonLoading(loginBtn, true);
+            
+            fetch(`${BASE_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, app_name: 'homework' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '用户名或密码错误') {
+                    showNotification(data.message, 'error');
+                } else {
+                    currentUser = data;
+                    localStorage.setItem('currentUser', JSON.stringify(data));
+                    showMainScreen();
+                    showNotification('登录成功', 'success');
+                }
+            })
+            .catch(error => {
+                showNotification('连接服务器失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(loginBtn, false);
+            });
+        }
+        
+        // 退出登录功能
+        function doLogout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            loginScreen.style.display = 'flex';
+            mainScreen.style.display = 'none';
+            
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showNotification('已退出登录', 'success');
+        }
+        
+        // 显示主界面
+        function showMainScreen() {
+            loginScreen.style.display = 'none';
+            mainScreen.style.display = 'block';
+            
+            document.getElementById('username-display').textContent = currentUser.username;
+            document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+            document.getElementById('welcome-title').textContent = `欢迎回来，${currentUser.username}`;
+            
+            loadData();
+        }
+        
+        // 加载数据
+        function loadData() {
+            refreshBtn.dataset.originalText = refreshBtn.innerHTML;
+            setButtonLoading(refreshBtn, true);
+            subjectsContainer.innerHTML = '';
+            
+            if (!currentUser || !currentUser.permissions || currentUser.permissions.length === 0) {
+                showNotification('您没有被授权查看任何科目的作业记录', 'warning');
+                dashboard.style.display = 'none';
+                noPermissionMessage.style.display = 'block';
+                setButtonLoading(refreshBtn, false);
+                return;
+            }
+            
+            // 处理每个权限
+            let loadedCount = 0;
+            const studentPermissions = currentUser.permissions.filter(p => p.startsWith('~'));
+            const totalPermissions = studentPermissions.length;
+            
+            if (totalPermissions === 0) {
+                showNotification('您没有被授权查看任何科目的作业记录', 'warning');
+                dashboard.style.display = 'none';
+                noPermissionMessage.style.display = 'block';
+                setButtonLoading(refreshBtn, false);
+                return;
+            }
+            
+            dashboard.style.display = 'block';
+            noPermissionMessage.style.display = 'none';
+            
+            subjectData = [];
+            
+            studentPermissions.forEach(perm => {
+                try {
+                    // 解析班级和学科 (格式: ~班级:学科)
+                    const [class_name, subject] = perm.substring(1).split(':');
+                    
+                    // 加载科目数据
+                    loadSubjectData(class_name, subject, () => {
+                        loadedCount++;
+                        if (loadedCount === totalPermissions) {
+                            updateStatistics();
+                            setButtonLoading(refreshBtn, false);
+                            showNotification('数据加载完成', 'success');
+                        }
+                    });
+                } catch (e) {
+                    console.error('解析权限失败:', perm, e);
+                    loadedCount++;
+                    if (loadedCount === totalPermissions) {
+                        updateStatistics();
+                        setButtonLoading(refreshBtn, false);
+                    }
+                }
+            });
+        }
+        
+        // 加载科目数据
+        function loadSubjectData(class_name, subject, callback) {
+            // 获取作业列表
+            fetch(`${BASE_URL}/assignments?class=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.assignments || data.assignments.length === 0) {
+                    addSubjectCard(subject, class_name, {
+                        '没带': 0,
+                        '没来': 0,
+                        '没做': 0,
+                        '补交': 0
+                    }, 0);
+                    callback();
+                    return;
+                }
+                
+                // 统计异常情况
+                const stats = {
+                    '没带': 0,
+                    '没来': 0,
+                    '没做': 0,
+                    '补交': 0
+                };
+                
+                let processedAssignments = 0;
+                let totalAssignments = data.assignments.length;
+                
+                data.assignments.forEach(assignment => {
+                    // 获取学生数据
+                    fetch(`${BASE_URL}/students?class=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}&assignment=${encodeURIComponent(assignment)}`)
+                    .then(response => response.json())
+                    .then(studentData => {
+                        if (studentData.students) {
+                            const student = studentData.students.find(s => s.name === currentUser.username);
+                            if (student && student.status && stats.hasOwnProperty(student.status)) {
+                                stats[student.status] += 1;
+                            }
+                        }
+                        
+                        processedAssignments++;
+                        if (processedAssignments === totalAssignments) {
+                            addSubjectCard(subject, class_name, stats, totalAssignments);
+                            subjectData.push({
+                                subject,
+                                class_name,
+                                stats,
+                                assignmentCount: totalAssignments
+                            });
+                            callback();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取学生数据失败:', error);
+                        processedAssignments++;
+                        if (processedAssignments === totalAssignments) {
+                            addSubjectCard(subject, class_name, stats, totalAssignments);
+                            subjectData.push({
+                                subject,
+                                class_name,
+                                stats,
+                                assignmentCount: totalAssignments
+                            });
+                            callback();
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('获取作业列表失败:', error);
+                addErrorCard(subject, class_name, `加载${subject}数据失败: ${error.message}`);
+                callback();
+            });
+        }
+        
+        // 添加科目卡片
+        function addSubjectCard(subject, class_name, stats, assignmentCount) {
+            const hasIssues = Object.values(stats).some(count => count > 0);
+            
+            const card = document.createElement('div');
+            card.className = 'subject-card';
+            
+            if (hasIssues) {
+                card.innerHTML = `
+                    <div class="subject-header">
+                        <h3 class="subject-name">${subject}</h3>
+                        <span class="subject-class">${class_name}</span>
+                    </div>
+                    <div class="status-stats">
+                        ${Object.entries(stats)
+                            .filter(([_, count]) => count > 0)
+                            .map(([status, count]) => `
+                                <div class="status-item status-${status.replace('没', '').replace('交', '')}">
+                                    <div class="status-icon">${count}</div>
+                                    <div class="status-info">
+                                        <div class="status-name">${status}</div>
+                                        <div class="status-count">${count}次</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="subject-header">
+                        <h3 class="subject-name">${subject}</h3>
+                        <span class="subject-class">${class_name}</span>
+                    </div>
+                    <div class="no-issues">
+                        <i class="fas fa-check-circle"></i>
+                        <div>✅ 没有异常记录</div>
+                        <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                            共 ${assignmentCount} 项作业
+                        </div>
+                    </div>
+                `;
+            }
+            
+            subjectsContainer.appendChild(card);
+        }
+        
+        // 添加错误卡片
+        function addErrorCard(subject, class_name, message) {
+            const card = document.createElement('div');
+            card.className = 'subject-card';
+            
+            card.innerHTML = `
+                <div class="subject-header">
+                    <h3 class="subject-name">${subject}</h3>
+                    <span class="subject-class">${class_name}</span>
+                </div>
+                <div style="text-align: center; padding: 20px 0; color: var(--error);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            subjectsContainer.appendChild(card);
+        }
+        
+        // 更新统计信息
+        function updateStatistics() {
+            const totalSubjects = subjectData.length;
+            const totalAssignments = subjectData.reduce((sum, subject) => sum + subject.assignmentCount, 0);
+            const noIssuesCount = subjectData.filter(subject => 
+                Object.values(subject.stats).every(count => count === 0)
+            ).length;
+            const totalIssues = subjectData.reduce((sum, subject) => 
+                sum + Object.values(subject.stats).reduce((s, count) => s + count, 0), 0
+            );
+            
+            document.getElementById('total-subjects').textContent = totalSubjects;
+            document.getElementById('total-assignments').textContent = totalAssignments;
+            document.getElementById('no-issues-count').textContent = noIssuesCount;
+            document.getElementById('total-issues').textContent = totalIssues;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业管理系统 - 课代表教师端</title>
+    <link rel="icon" href="ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --error: #f94144;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --card-bg: #ffffff;
+            --text-primary: #2b2d42;
+            --text-secondary: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 登录界面 */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 主界面 */
+        #main-screen {
+            display: none;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-title i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .app-title h1 {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        /* 控制面板 */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .selector-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selector-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: white;
+            transition: var(--transition);
+            min-width: 150px;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-success { background: #4cc9f0; color: white; }
+        .btn-secondary { background: #f8961e; color: white; }
+        .btn-warning { background: #f8961e; color: white; }
+        .btn-purple { background: #7209b7; color: white; }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 学生列表 */
+        .student-list-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .student-list-header {
+            display: grid;
+            grid-template-columns: 0.5fr 0.5fr 1fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr;
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            gap: 10px;
+        }
+
+        .student-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .student-item {
+            display: grid;
+            grid-template-columns: 0.5fr 0.5fr 1fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr;
+            padding: 12px 20px;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: var(--transition);
+        }
+
+        .student-item:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .student-item:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .status-no-book { color: #9c27b0; font-weight: 500; }
+        .status-absent { color: #f44336; font-weight: 500; }
+        .status-no-work { color: #e91e63; font-weight: 500; }
+        .status-late { color: #ff9800; font-weight: 500; }
+
+        .btn-no-book { background: #9c27b0; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-absent { background: #f44336; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-no-work { background: #e91e63; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-late { background: #ff9800; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-custom { background: #6a1b9a; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-reset { background: #607d8b; color: white; padding: 8px 12px; font-size: 0.85rem; }
+        .btn-action { background: var(--primary); color: white; padding: 8px 12px; font-size: 0.85rem; }
+
+        /* 无权限提示 */
+        .no-permission-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .no-permission-message i {
+            font-size: 3rem;
+            color: var(--warning);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* 无作业提示 */
+        .no-assignment-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .no-assignment-message i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--error);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        /* 自定义状态模态框 */
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-buttons .btn {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 复选框样式 */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 300px;
+            box-shadow: var(--shadow);
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.info { background: var(--primary); }
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* 加载动画 */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading .loader {
+            display: inline-block;
+        }
+
+        .btn-loading span {
+            display: none;
+        }
+
+        /* 响应式设计 - 移动端优化 */
+        @media (max-width: 1024px) {
+            .student-list-header,
+            .student-item {
+                grid-template-columns: 0.5fr 0.5fr 1fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr;
+                gap: 8px;
+            }
+            
+            .selector-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .button-row {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .login-card {
+                padding: 25px 15px;
+            }
+            
+            .control-panel {
+                padding: 15px;
+            }
+            
+            /* 移动端表头优化 - 显示学号、姓名、状态、操作 */
+            .student-list-header {
+                grid-template-columns: 0.8fr 1fr 1.2fr 0.8fr;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            /* 移动端学生项优化 */
+            .student-item {
+                grid-template-columns: 0.8fr 1fr 1.2fr 0.8fr;
+                padding: 10px 15px;
+                gap: 8px;
+            }
+            
+            /* 隐藏电脑端按钮列 */
+            .student-list-header div:nth-child(n+4):not(:last-child),
+            .student-item div:nth-child(n+4):not(:last-child) {
+                display: none;
+            }
+            
+            .button-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .notification {
+                left: 10px;
+                right: 10px;
+                min-width: auto;
+                padding: 12px 15px;
+            }
+            
+            /* 移动端按钮优化 */
+            .student-item .btn {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+            
+            .form-select {
+                min-width: 120px;
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .app-header {
+                margin-bottom: 15px;
+                padding: 10px 0;
+            }
+            
+            .header-content {
+                padding: 0 10px;
+            }
+            
+            .app-title h1 {
+                font-size: 1.2rem;
+            }
+            
+            .control-panel {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .selector-group {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            
+            .selector-label {
+                margin-bottom: 5px;
+            }
+            
+            .form-select {
+                width: 100%;
+            }
+            
+            .student-list-header,
+            .student-item {
+                padding: 8px 10px;
+            }
+            
+            .student-item .btn {
+                padding: 5px 6px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 通知组件 -->
+    <div class="notification" id="notification">
+        <span id="notification-message"></span>
+        <button class="notification-close" id="notification-close">&times;</button>
+    </div>
+
+    <!-- 登录界面 -->
+    <div id="login-screen">
+        <div class="container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h2 class="login-title">课代表教师登录</h2>
+                    <p class="login-subtitle">中国中学作业管理系统</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="username">用户名</label>
+                    <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                </div>
+                <button class="btn btn-primary" id="login-btn">
+                    <span>登录</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="main-screen">
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="app-title">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h1>课代表教师端</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">T</div>
+                        <span id="username-display">教师</span>
+                        <button class="logout-btn" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>退出</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 无权限提示 -->
+            <div class="no-permission-message" id="no-permission-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>您并没有课代表教师端权限</h3>
+                <p>请联系管理员为您添加相应的班级和科目管理权限</p>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="control-panel" id="control-panel">
+                <div class="selector-row">
+                    <div class="selector-group">
+                        <span class="selector-label">班级:</span>
+                        <select id="class-select" class="form-select">
+                            <option value="">选择班级</option>
+                        </select>
+                    </div>
+                    
+                    <div class="selector-group">
+                        <span class="selector-label">科目:</span>
+                        <select id="subject-select" class="form-select">
+                            <option value="">选择科目</option>
+                        </select>
+                    </div>
+                    
+                    <div class="selector-group">
+                        <span class="selector-label">作业:</span>
+                        <select id="assignment-select" class="form-select">
+                            <option value="">选择作业</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="button-row">
+                    <button class="btn btn-success" id="create-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>创建作业</span>
+                    </button>
+                    <button class="btn btn-secondary" id="modify-btn">
+                        <i class="fas fa-edit"></i>
+                        <span>修改作业</span>
+                    </button>
+                    <button class="btn btn-warning" id="export-btn">
+                        <i class="fas fa-download"></i>
+                        <span>导出表格</span>
+                    </button>
+                    <button class="btn btn-purple" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>刷新</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 无作业提示 -->
+            <div class="no-assignment-message" id="no-assignment-message" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>还没创建作业项目</h3>
+                <p>请点击左上角的"创建作业"按钮创建第一项作业</p>
+            </div>
+            
+            <!-- 学生列表 -->
+            <div class="student-list-container" id="student-list-container">
+                <div class="student-list-header">
+                    <div>学号</div>
+                    <div>姓名</div>
+                    <div>状态</div>
+                    <div>没带</div>
+                    <div>没来</div>
+                    <div>没做</div>
+                    <div>自定义</div>
+                    <div>重置</div>
+                </div>
+                
+                <div class="student-list" id="student-list">
+                    <!-- 学生列表将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建作业模态框 -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">创建新作业</h3>
+                <button class="modal-close" id="close-create-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">作业名称:</label>
+                <input type="text" id="assignment-name" class="form-control" placeholder="请输入作业名称">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-create-btn">取消</button>
+                <button class="btn btn-success" id="confirm-create-btn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出确认模态框 -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">导出Excel文件</h3>
+                <button class="modal-close" id="close-export-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <p id="export-message">将导出 班级_科目.xlsx</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-export-btn">取消</button>
+                <button class="btn btn-warning" id="confirm-export-btn">导出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义状态模态框 -->
+    <div class="modal" id="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">自定义状态</h3>
+                <button class="modal-close" id="close-custom-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">状态描述:</label>
+                <input type="text" id="custom-status" class="form-control" placeholder="请输入状态描述">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="is-abnormal" class="checkbox-input" checked>
+                <label class="checkbox-label" for="is-abnormal">标注为异常</label>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-custom-btn">取消</button>
+                <button class="btn btn-success" id="confirm-custom-btn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 服务器配置
+        const BASE_URL = 'https://longjieruankong.xyz';
+        
+        // 全局状态
+        let currentUser = null;
+        let currentClass = null;
+        let currentSubject = null;
+        let currentAssignment = null;
+        let classes = [];
+        let subjects = [];
+        let assignments = [];
+        let students = [];
+        let hasTeacherPermissions = false;
+        let selectedStudentId = null;
+        
+        // DOM元素
+        const loginScreen = document.getElementById('login-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationClose = document.getElementById('notification-close');
+        const logoutBtn = document.getElementById('logout-btn');
+        const controlPanel = document.getElementById('control-panel');
+        const noPermissionMessage = document.getElementById('no-permission-message');
+        const noAssignmentMessage = document.getElementById('no-assignment-message');
+        const studentListContainer = document.getElementById('student-list-container');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            bindEvents();
+            
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainScreen();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+        });
+        
+        // 绑定事件
+        function bindEvents() {
+            document.getElementById('login-btn').addEventListener('click', doLogin);
+            logoutBtn.addEventListener('click', doLogout);
+            notificationClose.addEventListener('click', hideNotification);
+            
+            document.getElementById('class-select').addEventListener('change', function() {
+                currentClass = this.value;
+                loadSubjects();
+            });
+            
+            document.getElementById('subject-select').addEventListener('change', function() {
+                currentSubject = this.value;
+                loadAssignments();
+            });
+            
+            document.getElementById('assignment-select').addEventListener('change', function() {
+                currentAssignment = this.value;
+                loadStudents();
+            });
+            
+            document.getElementById('create-btn').addEventListener('click', showCreateModal);
+            document.getElementById('confirm-create-btn').addEventListener('click', createAssignment);
+            document.getElementById('cancel-create-btn').addEventListener('click', hideCreateModal);
+            document.getElementById('close-create-modal').addEventListener('click', hideCreateModal);
+            
+            document.getElementById('export-btn').addEventListener('click', showExportModal);
+            document.getElementById('confirm-export-btn').addEventListener('click', exportExcel);
+            document.getElementById('cancel-export-btn').addEventListener('click', hideExportModal);
+            document.getElementById('close-export-modal').addEventListener('click', hideExportModal);
+            
+            document.getElementById('refresh-btn').addEventListener('click', refreshData);
+            
+            // 自定义状态模态框事件
+            document.getElementById('confirm-custom-btn').addEventListener('click', confirmCustomStatus);
+            document.getElementById('cancel-custom-btn').addEventListener('click', hideCustomModal);
+            document.getElementById('close-custom-modal').addEventListener('click', hideCustomModal);
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(hideNotification, 3000);
+        }
+        
+        // 隐藏通知
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+        
+        // 显示模态框
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        // 隐藏模态框
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 设置按钮加载状态
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.innerHTML = '<div class="loader"></div> 处理中...';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || button.innerHTML;
+            }
+        }
+        
+        // 登录功能
+        function doLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showNotification('用户名和密码不能为空', 'warning');
+                return;
+            }
+            
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.dataset.originalText = loginBtn.innerHTML;
+            setButtonLoading(loginBtn, true);
+            
+            fetch(`${BASE_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, app_name: 'homework' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '用户名或密码错误') {
+                    showNotification(data.message, 'error');
+                } else {
+                    currentUser = data;
+                    localStorage.setItem('currentUser', JSON.stringify(data));
+                    showMainScreen();
+                    showNotification('登录成功', 'success');
+                }
+            })
+            .catch(error => {
+                showNotification('连接服务器失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(loginBtn, false);
+            });
+        }
+        
+        // 退出登录功能
+        function doLogout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            loginScreen.style.display = 'flex';
+            mainScreen.style.display = 'none';
+            
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showNotification('已退出登录', 'success');
+        }
+        
+        // 显示主界面
+        function showMainScreen() {
+            loginScreen.style.display = 'none';
+            mainScreen.style.display = 'block';
+            
+            document.getElementById('username-display').textContent = currentUser.username;
+            document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+            
+            loadClasses();
+        }
+        
+        // 加载班级
+        function loadClasses() {
+            fetch(`${BASE_URL}/classes`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.classes) {
+                    classes = data.classes;
+                    updateClassSelect();
+                }
+            })
+            .catch(error => {
+                showNotification('加载班级失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 更新班级选择框
+        function updateClassSelect() {
+            const classSelect = document.getElementById('class-select');
+            classSelect.innerHTML = '<option value="">选择班级</option>';
+            
+            hasTeacherPermissions = false;
+            
+            if (hasAllPermissions()) {
+                // 有所有权限，显示所有班级
+                classes.forEach(className => {
+                    const option = document.createElement('option');
+                    option.value = className;
+                    option.textContent = className;
+                    classSelect.appendChild(option);
+                });
+                hasTeacherPermissions = true;
+            } else {
+                // 检查教师权限（不带~的权限）
+                const permittedClasses = [];
+                if (currentUser.permissions) {
+                    currentUser.permissions.forEach(perm => {
+                        if (perm.includes(':') && !perm.startsWith('~')) {
+                            const classSubject = perm.split(':')[0];
+                            const className = classSubject;
+                            if (classes.includes(className) && !permittedClasses.includes(className)) {
+                                permittedClasses.push(className);
+                                hasTeacherPermissions = true;
+                            }
+                        }
+                    });
+                }
+                
+                permittedClasses.forEach(className => {
+                    const option = document.createElement('option');
+                    option.value = className;
+                    option.textContent = className;
+                    classSelect.appendChild(option);
+                });
+            }
+            
+            // 检查是否有教师权限
+            if (!hasTeacherPermissions) {
+                controlPanel.style.display = 'none';
+                studentListContainer.style.display = 'none';
+                noPermissionMessage.style.display = 'block';
+                showNotification('您没有课代表教师端操作权限', 'warning');
+                return;
+            } else {
+                controlPanel.style.display = 'block';
+                studentListContainer.style.display = 'block';
+                noPermissionMessage.style.display = 'none';
+            }
+            
+            if (classSelect.options.length > 1) {
+                classSelect.value = classSelect.options[1].value;
+                currentClass = classSelect.value;
+                loadSubjects();
+            } else {
+                showNotification('您没有可管理的班级权限', 'warning');
+            }
+        }
+        
+        // 检查是否有所有权限(*:*)
+        function hasAllPermissions() {
+            return currentUser.permissions && currentUser.permissions.includes('*:*');
+        }
+        
+        // 加载科目
+        function loadSubjects() {
+            if (!currentClass) return;
+            
+            fetch(`${BASE_URL}/subjects?class=${encodeURIComponent(currentClass)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.subjects) {
+                    subjects = data.subjects;
+                    updateSubjectSelect();
+                }
+            })
+            .catch(error => {
+                showNotification('加载科目失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 更新科目选择框
+        function updateSubjectSelect() {
+            const subjectSelect = document.getElementById('subject-select');
+            subjectSelect.innerHTML = '<option value="">选择科目</option>';
+            
+            if (hasAllPermissions()) {
+                subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject;
+                    option.textContent = subject;
+                    subjectSelect.appendChild(option);
+                });
+            } else {
+                const permittedSubjects = [];
+                if (currentUser.permissions) {
+                    currentUser.permissions.forEach(perm => {
+                        if (perm.includes(':') && !perm.startsWith('~')) {
+                            const [classSubject, subject] = perm.split(':');
+                            const className = classSubject;
+                            if (className === currentClass && subjects.includes(subject) && !permittedSubjects.includes(subject)) {
+                                permittedSubjects.push(subject);
+                            }
+                        }
+                    });
+                }
+                
+                permittedSubjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject;
+                    option.textContent = subject;
+                    subjectSelect.appendChild(option);
+                });
+            }
+            
+            if (subjectSelect.options.length > 1) {
+                subjectSelect.value = subjectSelect.options[1].value;
+                currentSubject = subjectSelect.value;
+                loadAssignments();
+            } else {
+                showNotification(`您在${currentClass}班没有可管理的科目权限`, 'warning');
+            }
+        }
+        
+        // 加载作业
+        function loadAssignments() {
+            if (!currentClass || !currentSubject) return;
+            
+            fetch(`${BASE_URL}/assignments?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.assignments) {
+                    assignments = data.assignments;
+                    updateAssignmentSelect();
+                }
+            })
+            .catch(error => {
+                showNotification('加载作业列表失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 更新作业选择框
+        function updateAssignmentSelect() {
+            const assignmentSelect = document.getElementById('assignment-select');
+            assignmentSelect.innerHTML = '<option value="">选择作业</option>';
+            
+            assignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.value = assignment;
+                option.textContent = assignment;
+                assignmentSelect.appendChild(option);
+            });
+            
+            if (assignmentSelect.options.length > 1) {
+                assignmentSelect.value = assignmentSelect.options[1].value;
+                currentAssignment = assignmentSelect.value;
+                loadStudents();
+                // 隐藏无作业提示
+                noAssignmentMessage.style.display = 'none';
+                studentListContainer.style.display = 'block';
+            } else {
+                // 显示无作业提示
+                noAssignmentMessage.style.display = 'block';
+                studentListContainer.style.display = 'none';
+                showNotification('该科目下还没有作业，请创建作业', 'info');
+            }
+        }
+        
+        // 加载学生数据
+        function loadStudents() {
+            if (!currentClass || !currentSubject || !currentAssignment) return;
+            
+            fetch(`${BASE_URL}/students?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}&assignment=${encodeURIComponent(currentAssignment)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.students) {
+                    students = data.students;
+                    displayStudents();
+                }
+            })
+            .catch(error => {
+                showNotification('加载学生数据失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 显示学生列表
+        function displayStudents() {
+            const studentList = document.getElementById('student-list');
+            studentList.innerHTML = '';
+            
+            if (students.length === 0) {
+                studentList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">暂无学生数据</div>';
+                return;
+            }
+            
+            students.forEach((student, index) => {
+                const studentItem = document.createElement('div');
+                studentItem.className = 'student-item';
+                
+                // 学号
+                const idCell = document.createElement('div');
+                idCell.textContent = student.id;
+                studentItem.appendChild(idCell);
+                
+                // 姓名
+                const nameCell = document.createElement('div');
+                nameCell.textContent = student.name;
+                studentItem.appendChild(nameCell);
+                
+                // 状态
+                const statusCell = document.createElement('div');
+                statusCell.textContent = student.status || '';
+                
+                if (student.status === '没带') {
+                    statusCell.className = 'status-no-book';
+                } else if (student.status === '没来') {
+                    statusCell.className = 'status-absent';
+                } else if (student.status === '没做') {
+                    statusCell.className = 'status-no-work';
+                } else if (student.status === '补交') {
+                    statusCell.className = 'status-late';
+                }
+                
+                studentItem.appendChild(statusCell);
+                
+                // 电脑端按钮
+                const noBookBtn = document.createElement('button');
+                noBookBtn.className = 'btn btn-no-book';
+                noBookBtn.textContent = '没带';
+                noBookBtn.addEventListener('click', () => updateStudentStatus(student.id, '没带', true));
+                studentItem.appendChild(noBookBtn);
+                
+                const absentBtn = document.createElement('button');
+                absentBtn.className = 'btn btn-absent';
+                absentBtn.textContent = '没来';
+                absentBtn.addEventListener('click', () => updateStudentStatus(student.id, '没来', true));
+                studentItem.appendChild(absentBtn);
+                
+                const noWorkBtn = document.createElement('button');
+                noWorkBtn.className = 'btn btn-no-work';
+                noWorkBtn.textContent = '没做';
+                noWorkBtn.addEventListener('click', () => updateStudentStatus(student.id, '没做', true));
+                studentItem.appendChild(noWorkBtn);
+                
+                // 自定义按钮
+                const customBtn = document.createElement('button');
+                customBtn.className = 'btn btn-custom';
+                customBtn.textContent = '自定义';
+                customBtn.addEventListener('click', () => showCustomModal(student.id));
+                studentItem.appendChild(customBtn);
+                
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'btn btn-reset';
+                resetBtn.textContent = '重置';
+                resetBtn.addEventListener('click', () => updateStudentStatus(student.id, '', false));
+                studentItem.appendChild(resetBtn);
+                
+                studentList.appendChild(studentItem);
+            });
+        }
+        
+        // 更新学生状态
+        function updateStudentStatus(studentId, status, isAbnormal = false) {
+            fetch(`${BASE_URL}/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    class: currentClass,
+                    subject: currentSubject,
+                    assignment: currentAssignment,
+                    student_id: studentId,
+                    status: status,
+                    is_abnormal: isAbnormal
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '更新成功') {
+                    loadStudents();
+                } else {
+                    showNotification(data.message || '更新失败', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('更新状态失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 显示自定义状态模态框
+        function showCustomModal(studentId) {
+            selectedStudentId = studentId;
+            document.getElementById('custom-status').value = '';
+            document.getElementById('is-abnormal').checked = true;
+            showModal('custom-modal');
+        }
+        
+        // 隐藏自定义状态模态框
+        function hideCustomModal() {
+            hideModal('custom-modal');
+        }
+        
+        // 确认自定义状态
+        function confirmCustomStatus() {
+            const status = document.getElementById('custom-status').value;
+            const isAbnormal = document.getElementById('is-abnormal').checked;
+            
+            if (!status) {
+                showNotification('请输入状态描述', 'warning');
+                return;
+            }
+            
+            hideCustomModal();
+            updateStudentStatus(selectedStudentId, status, isAbnormal);
+        }
+        
+        // 显示创建作业模态框
+        function showCreateModal() {
+            if (!currentClass || !currentSubject) {
+                showNotification('请先选择班级和科目', 'warning');
+                return;
+            }
+            
+            document.getElementById('assignment-name').value = '';
+            showModal('create-modal');
+        }
+        
+        // 隐藏创建作业模态框
+        function hideCreateModal() {
+            hideModal('create-modal');
+        }
+        
+        // 创建作业
+        function createAssignment() {
+            const name = document.getElementById('assignment-name').value;
+            if (!name) {
+                showNotification('作业名称不能为空', 'warning');
+                return;
+            }
+            
+            hideCreateModal();
+            
+            fetch(`${BASE_URL}/create_assignment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    class: currentClass,
+                    subject: currentSubject,
+                    assignment: name
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '创建成功') {
+                    showNotification('作业创建成功', 'success');
+                    loadAssignments();
+                } else {
+                    showNotification(data.message || '创建失败', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('创建作业失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 显示导出模态框
+        function showExportModal() {
+            if (!currentClass || !currentSubject) {
+                showNotification('请先选择班级和科目', 'warning');
+                return;
+            }
+            
+            document.getElementById('export-message').textContent = `将导出 ${currentClass}_${currentSubject}.xlsx`;
+            showModal('export-modal');
+        }
+        
+        // 隐藏导出模态框
+        function hideExportModal() {
+            hideModal('export-modal');
+        }
+        
+        // 导出Excel
+        function exportExcel() {
+            hideExportModal();
+            
+            const a = document.createElement('a');
+            a.href = `${BASE_URL}/download?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`;
+            a.download = `${currentClass}_${currentSubject}.xlsx`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showNotification('导出请求已发送', 'success');
+        }
+        
+        // 刷新数据
+        function refreshData() {
+            loadClasses();
+        }
+    </script>
+</body>
+</html>

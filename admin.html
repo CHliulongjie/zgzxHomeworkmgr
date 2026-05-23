@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业管理系统 - 管理端</title>
+    <link rel="icon" href="ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --error: #f94144;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --card-bg: #ffffff;
+            --text-primary: #2b2d42;
+            --text-secondary: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 登录界面 */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 主界面 */
+        #main-screen {
+            display: none;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-title i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .app-title h1 {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        /* 选项卡 */
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+            color: var(--text-secondary);
+            position: relative;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn-success { background: #4cc9f0; color: white; }
+        .btn-secondary { background: #f8961e; color: white; }
+        .btn-error { background: #f94144; color: white; }
+        .btn-purple { background: #7209b7; color: white; }
+        .btn-pink { background: #f72585; color: white; }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 表单组 */
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        /* 用户列表 */
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .user-item {
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .user-item:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .user-item.selected {
+            background: rgba(67, 97, 238, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .username {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .user-roles {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .user-permissions {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--error);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 300px;
+            box-shadow: var(--shadow);
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.info { background: var(--primary); }
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* 加载动画 */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading .loader {
+            display: inline-block;
+        }
+
+        .btn-loading span {
+            display: none;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-col {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+            
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
+                min-width: auto;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 通知组件 -->
+    <div class="notification" id="notification">
+        <span id="notification-message"></span>
+        <button class="notification-close" id="notification-close">&times;</button>
+    </div>
+
+    <!-- 登录界面 -->
+    <div id="login-screen">
+        <div class="container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <i class="fas fa-user-shield"></i>
+                    <h2 class="login-title">管理员登录</h2>
+                    <p class="login-subtitle">中国中学作业管理系统</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="username">用户名</label>
+                    <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input type="password" id="password" class="form-control" placeholder="请输入密码">
+                </div>
+                <button class="btn btn-primary" id="login-btn">
+                    <span>登录</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="main-screen">
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="app-title">
+                        <i class="fas fa-user-shield"></i>
+                        <h1>管理控制台</h1>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">A</div>
+                        <span id="username-display">管理员</span>
+                        <button class="logout-btn" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>退出</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 选项卡导航 -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="account">账户管理</button>
+                <button class="tab-btn" data-tab="permission">权限管理</button>
+                <button class="tab-btn" data-tab="password">密码管理</button>
+            </div>
+
+            <!-- 选项卡内容 -->
+            <div class="tab-content">
+                <!-- 账户管理选项卡 -->
+                <div class="tab-pane active" id="account-tab">
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-user-plus"></i> 创建新账户</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="new-username">用户名:</label>
+                            <input type="text" id="new-username" class="form-control" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="new-password">密码:</label>
+                            <input type="password" id="new-password" class="form-control" placeholder="请输入密码">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">选择账户类型:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="radio" id="account-admin" name="account-type" value="admin">
+                                    <span>管理员账户</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="radio" id="account-user" name="account-type" value="user" checked>
+                                    <span>普通账户</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" id="create-account-btn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>创建账户</span>
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-users"></i> 用户列表</h3>
+                        <div class="form-group">
+                            <input type="text" id="user-search" class="form-control" placeholder="搜索用户...">
+                        </div>
+                        <div id="users-list" class="user-list">
+                            <!-- 用户列表将通过JS动态生成 -->
+                        </div>
+                        <button class="btn btn-secondary" id="refresh-users-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>刷新列表</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 权限管理选项卡 -->
+                <div class="tab-pane" id="permission-tab">
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-key"></i> 权限管理</h3>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label class="form-label" for="class-select">班级:</label>
+                                <select id="class-select" class="form-control">
+                                    <option value="">选择班级</option>
+                                    <!-- 班级选项将通过JS动态生成 -->
+                                </select>
+                            </div>
+                            <div class="form-col">
+                                <label class="form-label" for="subject-select">学科:</label>
+                                <select id="subject-select" class="form-control">
+                                    <option value="">选择学科</option>
+                                    <!-- 学科选项将通过JS动态生成 -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button class="btn btn-success" id="add-teacher-perm-btn">
+                                <i class="fas fa-user-tie"></i>
+                                <span>添加教师权限</span>
+                            </button>
+                            <button class="btn btn-secondary" id="add-student-perm-btn">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>添加学生权限</span>
+                            </button>
+                            <button class="btn btn-error" id="remove-perm-btn">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>移除权限</span>
+                            </button>
+                        </div>
+                        
+                        <h4 style="margin: 20px 0 10px; color: var(--text-primary);">用户列表</h4>
+                        <div id="permission-users-list" class="user-list">
+                            <!-- 用户列表将通过JS动态生成 -->
+                        </div>
+                        <button class="btn btn-purple" id="refresh-permission-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>刷新权限列表</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 密码管理选项卡 -->
+                <div class="tab-pane" id="password-tab">
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-key"></i> 密码管理</h3>
+                        <div class="form-group">
+                            <input type="text" id="password-search" class="form-control" placeholder="输入用户名搜索...">
+                        </div>
+                        <div id="password-users-list" class="user-list">
+                            <!-- 用户列表将通过JS动态生成 -->
+                        </div>
+                        <button class="btn btn-pink" id="change-password-btn">
+                            <i class="fas fa-key"></i>
+                            <span>修改密码</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码模态框 -->
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="password-modal-title">修改密码</h3>
+                <button class="modal-close" id="close-password-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="new-password-input">新密码:</label>
+                    <input type="password" id="new-password-input" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirm-password-input">确认密码:</label>
+                    <input type="password" id="confirm-password-input" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-password-btn">取消</button>
+                <button class="btn btn-success" id="confirm-password-btn">
+                    <span>确认修改</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 权限选择模态框 -->
+    <div class="modal" id="permission-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">选择要移除的权限</h3>
+                <button class="modal-close" id="close-permission-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="permission-list" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- 权限列表将通过JS动态生成 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-error" id="cancel-permission-btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 服务器配置
+        const BASE_URL = 'https://longjieruankong.xyz';
+        
+        // 全局状态
+        let currentUser = null;
+        let selectedUser = null;
+        let selectedPasswordUser = null;
+        let users = [];
+        let passwordUsers = [];
+        
+        // DOM元素
+        const loginScreen = document.getElementById('login-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationClose = document.getElementById('notification-close');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            bindEvents();
+            
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    // 检查是否为管理员
+                    if (!isAdminUser(currentUser)) {
+                        localStorage.removeItem('currentUser');
+                        showNotification('您没有管理员权限', 'error');
+                        return;
+                    }
+                    showMainScreen();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+        });
+        
+        // 绑定事件
+        function bindEvents() {
+            document.getElementById('login-btn').addEventListener('click', doLogin);
+            logoutBtn.addEventListener('click', doLogout);
+            notificationClose.addEventListener('click', hideNotification);
+            
+            // 选项卡切换
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // 创建账户按钮
+            document.getElementById('create-account-btn').addEventListener('click', registerUser);
+            
+            // 刷新用户列表按钮
+            document.getElementById('refresh-users-btn').addEventListener('click', loadUsers);
+            
+            // 用户搜索
+            document.getElementById('user-search').addEventListener('input', filterUsers);
+            
+            // 权限管理相关按钮
+            document.getElementById('add-teacher-perm-btn').addEventListener('click', () => addPermission('teacher'));
+            document.getElementById('add-student-perm-btn').addEventListener('click', () => addPermission('student'));
+            document.getElementById('remove-perm-btn').addEventListener('click', showPermissionSelection);
+            document.getElementById('refresh-permission-btn').addEventListener('click', loadPermissionUsers);
+            
+            // 班级选择变化
+            document.getElementById('class-select').addEventListener('change', loadSubjects);
+            
+            // 密码管理相关
+            document.getElementById('change-password-btn').addEventListener('click', showPasswordModal);
+            document.getElementById('confirm-password-btn').addEventListener('click', changePassword);
+            document.getElementById('cancel-password-btn').addEventListener('click', () => {
+                hideModal('password-modal');
+            });
+            document.getElementById('close-password-modal').addEventListener('click', () => {
+                hideModal('password-modal');
+            });
+            
+            // 权限模态框
+            document.getElementById('close-permission-modal').addEventListener('click', () => {
+                hideModal('permission-modal');
+            });
+            document.getElementById('cancel-permission-btn').addEventListener('click', () => {
+                hideModal('permission-modal');
+            });
+            
+            // 密码搜索
+            document.getElementById('password-search').addEventListener('input', filterPasswordUsers);
+        }
+        
+        // 检查是否为管理员用户
+        function isAdminUser(user) {
+            return user && user.permissions && (
+                user.permissions.includes('*') || 
+                user.permissions.includes('*:*') ||
+                (user.roles && user.roles.includes('admin'))
+            );
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(hideNotification, 3000);
+        }
+        
+        // 隐藏通知
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+        
+        // 显示模态框
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        // 隐藏模态框
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 设置按钮加载状态
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.innerHTML = '<div class="loader"></div> 处理中...';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || button.innerHTML;
+            }
+        }
+        
+        // 登录功能
+        function doLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showNotification('用户名和密码不能为空', 'warning');
+                return;
+            }
+            
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.dataset.originalText = loginBtn.innerHTML;
+            setButtonLoading(loginBtn, true);
+            
+            fetch(`${BASE_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, app_name: 'homework' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '用户名或密码错误') {
+                    showNotification(data.message, 'error');
+                } else if (data.message === '权限不足，只有管理员可以登录管理端') {
+                    showNotification(data.message, 'error');
+                } else {
+                    // 检查是否为管理员
+                    if (!isAdminUser(data)) {
+                        showNotification('您没有管理员权限', 'error');
+                        return;
+                    }
+                    
+                    currentUser = data;
+                    localStorage.setItem('currentUser', JSON.stringify(data));
+                    showMainScreen();
+                    showNotification('登录成功', 'success');
+                }
+            })
+            .catch(error => {
+                showNotification('连接服务器失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(loginBtn, false);
+            });
+        }
+        
+        // 退出登录功能
+        function doLogout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            loginScreen.style.display = 'flex';
+            mainScreen.style.display = 'none';
+            
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showNotification('已退出登录', 'success');
+        }
+        
+        // 显示主界面
+        function showMainScreen() {
+            loginScreen.style.display = 'none';
+            mainScreen.style.display = 'block';
+            
+            document.getElementById('username-display').textContent = currentUser.username;
+            document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+            
+            loadUsers();
+            loadPermissionData();
+            loadPasswordUsers();
+        }
+        
+        // 加载用户列表
+        function loadUsers() {
+            const refreshBtn = document.getElementById('refresh-users-btn');
+            refreshBtn.dataset.originalText = refreshBtn.innerHTML;
+            setButtonLoading(refreshBtn, true);
+            
+            fetch(`${BASE_URL}/users`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.users) {
+                    users = data.users;
+                    renderUsersList();
+                    showNotification('用户列表已刷新', 'success');
+                }
+            })
+            .catch(error => {
+                showNotification('加载用户列表失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(refreshBtn, false);
+            });
+        }
+        
+        // 渲染用户列表
+        function renderUsersList() {
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = '';
+            
+            if (users.length === 0) {
+                usersList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">暂无用户数据</div>';
+                return;
+            }
+            
+            users.forEach((user, index) => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.dataset.username = user.username;
+                
+                if (selectedUser && selectedUser.username === user.username) {
+                    userItem.classList.add('selected');
+                }
+                
+                userItem.innerHTML = `
+                    <div class="user-header">
+                        <span class="username">${user.username}</span>
+                        <span class="user-roles">角色: ${user.roles.join(', ')}</span>
+                    </div>
+                    <div class="user-permissions">权限: ${user.permissions.join(', ') || '无'}</div>
+                `;
+                
+                userItem.addEventListener('click', () => {
+                    selectedUser = user;
+                    document.querySelectorAll('#users-list .user-item').forEach(item => {
+                        item.classList.toggle('selected', item.dataset.username === user.username);
+                    });
+                });
+                
+                usersList.appendChild(userItem);
+            });
+        }
+        
+        // 过滤用户
+        function filterUsers() {
+            const searchText = document.getElementById('user-search').value.toLowerCase();
+            const userItems = document.querySelectorAll('#users-list .user-item');
+            
+            userItems.forEach(item => {
+                const username = item.dataset.username.toLowerCase();
+                if (username.includes(searchText)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 注册用户
+        function registerUser() {
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            
+            // 获取选中的角色
+            const roles = [];
+            if (document.getElementById('role-admin').checked) roles.push('admin');
+            if (document.getElementById('role-teacher').checked) roles.push('teacher');
+            if (document.getElementById('role-student').checked) roles.push('student');
+            
+            if (!username || !password) {
+                showNotification('用户名和密码不能为空', 'warning');
+                return;
+            }
+            
+            if (!document.querySelector('input[name="account-type"]:checked')) {
+                showNotification('请选择账户类型', 'warning');
+                return;
+            }
+            
+            const createBtn = document.getElementById('create-account-btn');
+            createBtn.dataset.originalText = createBtn.innerHTML;
+            setButtonLoading(createBtn, true);
+            
+            const accountType = document.querySelector('input[name="account-type"]:checked').value;
+            fetch(`${BASE_URL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    account_type: accountType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '用户名已存在') {
+                    showNotification(data.message, 'error');
+                } else {
+                    showNotification('用户注册成功', 'success');
+                    // 清空表单
+                    document.getElementById('new-username').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('account-user').checked = true;
+                    document.getElementById('account-admin').checked = false;
+                    
+                    // 刷新用户列表
+                    loadUsers();
+                }
+            })
+            .catch(error => {
+                showNotification('连接服务器失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(createBtn, false);
+            });
+        }
+        
+        // 加载权限数据
+        function loadPermissionData() {
+            // 加载班级
+            fetch(`${BASE_URL}/classes`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.classes) {
+                    const classSelect = document.getElementById('class-select');
+                    classSelect.innerHTML = '<option value="">选择班级</option>';
+                    
+                    data.classes.forEach(className => {
+                        const option = document.createElement('option');
+                        option.value = className;
+                        option.textContent = className;
+                        classSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                showNotification('加载班级失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 加载学科
+        function loadSubjects() {
+            const classSelect = document.getElementById('class-select');
+            const className = classSelect.value;
+            
+            if (!className) return;
+            
+            fetch(`${BASE_URL}/subjects?class=${encodeURIComponent(className)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.subjects) {
+                    const subjectSelect = document.getElementById('subject-select');
+                    subjectSelect.innerHTML = '<option value="">选择学科</option>';
+                    
+                    data.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject;
+                        option.textContent = subject;
+                        subjectSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                showNotification('加载学科失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 加载权限用户列表
+        function loadPermissionUsers() {
+            const refreshBtn = document.getElementById('refresh-permission-btn');
+            refreshBtn.dataset.originalText = refreshBtn.innerHTML;
+            setButtonLoading(refreshBtn, true);
+            
+            fetch(`${BASE_URL}/users`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.users) {
+                    const usersList = document.getElementById('permission-users-list');
+                    usersList.innerHTML = '';
+                    
+                    if (data.users.length === 0) {
+                        usersList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">暂无用户数据</div>';
+                        return;
+                    }
+                    
+                    data.users.forEach((user, index) => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'user-item';
+                        userItem.dataset.username = user.username;
+                        
+                        if (selectedUser && selectedUser.username === user.username) {
+                            userItem.classList.add('selected');
+                        }
+                        
+                        userItem.innerHTML = `
+                            <div class="user-header">
+                                <span class="username">${user.username}</span>
+                                <span class="user-roles">角色: ${user.roles.join(', ')}</span>
+                            </div>
+                            <div class="user-permissions">权限: ${user.permissions.join(', ') || '无'}</div>
+                        `;
+                        
+                        userItem.addEventListener('click', () => {
+                            selectedUser = user;
+                            document.querySelectorAll('#permission-users-list .user-item').forEach(item => {
+                                item.classList.toggle('selected', item.dataset.username === user.username);
+                            });
+                        });
+                        
+                        usersList.appendChild(userItem);
+                    });
+                    
+                    showNotification('权限用户列表已刷新', 'success');
+                }
+            })
+            .catch(error => {
+                showNotification('加载用户列表失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(refreshBtn, false);
+            });
+        }
+        
+        // 添加权限
+        function addPermission(permType) {
+            if (!selectedUser) {
+                showNotification('请先选择用户', 'warning');
+                return;
+            }
+            
+            const classSelect = document.getElementById('class-select');
+            const subjectSelect = document.getElementById('subject-select');
+            
+            const className = classSelect.value;
+            const subject = subjectSelect.value;
+            
+            if (!className || !subject) {
+                showNotification('请选择班级和学科', 'warning');
+                return;
+            }
+            
+            const prefix = permType === 'student' ? '~' : '';
+            const newPermission = `${prefix}${className}:${subject}`;
+            
+            // 检查权限是否已存在
+            if (selectedUser.permissions.includes(newPermission)) {
+                showNotification('该权限已存在', 'warning');
+                return;
+            }
+            
+            // 更新权限
+            const updatedPermissions = [...selectedUser.permissions, newPermission];
+            
+            fetch(`${BASE_URL}/set_permissions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    uid: selectedUser.uid,
+                    permissions: updatedPermissions.join(','),
+                    app_name: 'homework'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '权限更新成功') {
+                    showNotification(`已添加${permType === 'teacher' ? '教师' : '学生'}权限`, 'success');
+                    loadPermissionUsers();
+                } else {
+                    showNotification(data.message || '添加权限失败', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('添加权限失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 显示权限选择模态框
+        function showPermissionSelection() {
+            if (!selectedUser) {
+                showNotification('请先选择用户', 'warning');
+                return;
+            }
+            
+            const permissions = selectedUser.permissions;
+            if (permissions.length === 0) {
+                showNotification('当前没有可移除的权限', 'warning');
+                return;
+            }
+            
+            const permissionList = document.getElementById('permission-list');
+            permissionList.innerHTML = '';
+            
+            permissions.forEach(perm => {
+                const permBtn = document.createElement('button');
+                permBtn.className = 'btn btn-primary';
+                permBtn.textContent = perm;
+                
+                permBtn.addEventListener('click', () => {
+                    removePermission(perm);
+                });
+                
+                permissionList.appendChild(permBtn);
+            });
+            
+            showModal('permission-modal');
+        }
+        
+        // 移除权限
+        function removePermission(permission) {
+            const updatedPermissions = selectedUser.permissions.filter(p => p !== permission);
+            
+            fetch(`${BASE_URL}/set_permissions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    uid: selectedUser.uid,
+                    permissions: updatedPermissions.join(','),
+                    app_name: 'homework'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '权限更新成功') {
+                    showNotification('权限移除成功', 'success');
+                    hideModal('permission-modal');
+                    loadPermissionUsers();
+                } else {
+                    showNotification(data.message || '移除权限失败', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('移除权限失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 加载密码管理用户列表
+        function loadPasswordUsers() {
+            fetch(`${BASE_URL}/users`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.users) {
+                    passwordUsers = data.users;
+                    renderPasswordUsersList();
+                }
+            })
+            .catch(error => {
+                showNotification('加载用户列表失败: ' + error.message, 'error');
+            });
+        }
+        
+        // 渲染密码管理用户列表
+        function renderPasswordUsersList() {
+            const usersList = document.getElementById('password-users-list');
+            usersList.innerHTML = '';
+            
+            if (passwordUsers.length === 0) {
+                usersList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">暂无用户数据</div>';
+                return;
+            }
+            
+            passwordUsers.forEach((user, index) => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.dataset.username = user.username;
+                
+                if (selectedPasswordUser && selectedPasswordUser.username === user.username) {
+                    userItem.classList.add('selected');
+                }
+                
+                userItem.innerHTML = `
+                    <div class="user-header">
+                        <span class="username">${user.username}</span>
+                        <span class="user-roles">角色: ${user.roles.join(', ')}</span>
+                    </div>
+                `;
+                
+                userItem.addEventListener('click', () => {
+                    selectedPasswordUser = user;
+                    document.querySelectorAll('#password-users-list .user-item').forEach(item => {
+                        item.classList.toggle('selected', item.dataset.username === user.username);
+                    });
+                });
+                
+                usersList.appendChild(userItem);
+            });
+        }
+        
+        // 过滤密码用户
+        function filterPasswordUsers() {
+            const searchText = document.getElementById('password-search').value.toLowerCase();
+            const userItems = document.querySelectorAll('#password-users-list .user-item');
+            
+            userItems.forEach(item => {
+                const username = item.dataset.username.toLowerCase();
+                if (username.includes(searchText)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 显示密码修改模态框
+        function showPasswordModal() {
+            if (!selectedPasswordUser) {
+                showNotification('请先选择用户', 'warning');
+                return;
+            }
+            
+            document.getElementById('password-modal-title').textContent = 
+                `修改密码 - ${selectedPasswordUser.username}`;
+            
+            // 清空输入框
+            document.getElementById('new-password-input').value = '';
+            document.getElementById('confirm-password-input').value = '';
+            
+            showModal('password-modal');
+        }
+        
+        // 修改密码
+        function changePassword() {
+            const newPassword = document.getElementById('new-password-input').value;
+            const confirmPassword = document.getElementById('confirm-password-input').value;
+            
+            if (!newPassword) {
+                showNotification('新密码不能为空', 'warning');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('两次输入的密码不一致', 'warning');
+                return;
+            }
+            
+            const confirmBtn = document.getElementById('confirm-password-btn');
+            confirmBtn.dataset.originalText = confirmBtn.innerHTML;
+            setButtonLoading(confirmBtn, true);
+            
+            fetch(`${BASE_URL}/change_password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: selectedPasswordUser.username,
+                    new_password: newPassword,
+                    operator: currentUser.username
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '密码修改成功') {
+                    showNotification('密码修改成功', 'success');
+                    hideModal('password-modal');
+                } else {
+                    showNotification(data.message || '修改密码失败', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('修改密码失败: ' + error.message, 'error');
+            })
+            .finally(() => {
+                setButtonLoading(confirmBtn, false);
+            });
+        }
+    </script>
+</body>
+</html>
