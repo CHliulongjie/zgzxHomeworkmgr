@@ -775,7 +775,7 @@
         // 加载科目数据
         function loadSubjectData(class_name, subject, callback) {
             // 获取作业列表
-            fetch(`${BASE_URL}/assignments?class=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}`)
+            fetch(`${BASE_URL}/assignments?class_name=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}`)
             .then(response => response.json())
             .then(data => {
                 if (!data.assignments || data.assignments.length === 0) {
@@ -802,7 +802,7 @@
                 
                 data.assignments.forEach(assignment => {
                     // 获取学生数据
-                    fetch(`${BASE_URL}/students?class=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}&assignment=${encodeURIComponent(assignment)}`)
+                    fetch(`${BASE_URL}/students?class_name=${encodeURIComponent(class_name)}&subject=${encodeURIComponent(subject)}&assignment=${encodeURIComponent(assignment)}`)
                     .then(response => response.json())
                     .then(studentData => {
                         if (studentData.students) {

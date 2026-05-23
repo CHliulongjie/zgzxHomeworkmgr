@@ -1116,7 +1116,7 @@
         function loadSubjects() {
             if (!currentClass) return;
             
-            fetch(`${BASE_URL}/subjects?class=${encodeURIComponent(currentClass)}`)
+            fetch(`${BASE_URL}/subjects?class_name=${encodeURIComponent(currentClass)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.subjects) {
@@ -1176,7 +1176,7 @@
         function loadAssignments() {
             if (!currentClass || !currentSubject) return;
             
-            fetch(`${BASE_URL}/assignments?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`)
+            fetch(`${BASE_URL}/assignments?class_name=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.assignments) {
@@ -1220,7 +1220,7 @@
         function loadStudents() {
             if (!currentClass || !currentSubject || !currentAssignment) return;
             
-            fetch(`${BASE_URL}/students?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}&assignment=${encodeURIComponent(currentAssignment)}`)
+            fetch(`${BASE_URL}/students?class_name=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}&assignment=${encodeURIComponent(currentAssignment)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.students) {
@@ -1437,7 +1437,7 @@
             hideExportModal();
             
             const a = document.createElement('a');
-            a.href = `${BASE_URL}/download?class=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`;
+            a.href = `${BASE_URL}/download?class_name=${encodeURIComponent(currentClass)}&subject=${encodeURIComponent(currentSubject)}`;
             a.download = `${currentClass}_${currentSubject}.xlsx`;
             a.style.display = 'none';
             document.body.appendChild(a);
